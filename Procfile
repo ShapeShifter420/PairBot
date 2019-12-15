@@ -1,1 +1,1 @@
-web: java src/main/java/com/PairBot/BotBody.java
+web: java -jar target/Pair-1.0-SNAPSHOT.jar

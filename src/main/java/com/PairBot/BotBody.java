@@ -1,6 +1,5 @@
 package com.PairBot;
 
-import org.apache.commons.codec.language.bm.Lang;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -9,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -29,8 +27,6 @@ public class BotBody extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-
-    String HelpMsg = "Telegram Бот способный проводить розыгрыши среди зарегестрированных пользователей, собирать статистику и выводить ей в ввиде списка";
 
     private void sendMsg(Long id, String text,String[] typeOfKeyBoard){
         List<List<InlineKeyboardButton>> keyboardButtons = new ArrayList<>();
@@ -67,20 +63,22 @@ public class BotBody extends TelegramLongPollingBot {
         if(update.hasMessage()){
             Message message = update.getMessage();
             Long chatId = update.getMessage().getChatId();
+            SqlBase database = new SqlBase("all_chat");
+            Messages.LANGG lang = database.getLang(chatId);
             if (message != null && message.hasText()) {
                 switch (message.getText()) {
                     case "/shipper@PairBot":
-                        makeShipper(chatId);
+                        makeShipper(chatId,lang);
                         break;
                     case "/help@PairBot":
                         System.out.println(1);
-                        sendMsg(chatId, HelpMsg, COMMAND);
+                        sendMsg(chatId, Messages.HelpMsg[lang.ordinal()], COMMAND);
                         break;
                     case "/stat@PairBot":
-                        makeStat(chatId);
+                        makeStat(chatId,lang);
                         break;
                     case "/reg@PairBot":
-                        regUser(chatId, update.getMessage().getFrom());
+                        regUser(chatId, update.getMessage().getFrom(),lang);
                         break;
                     case "/setlang@PairBot":
                         sendMsg(chatId, "Chose lang", new String[]{"setRU \uD83C\uDDF7\uD83C\uDDFA", "setEN \uD83C\uDDFA\uD83C\uDDF8"});
@@ -93,31 +91,51 @@ public class BotBody extends TelegramLongPollingBot {
 
         }
         else if(update.hasCallbackQuery()){
+            SqlBase database = new SqlBase("all_chat");
             CallbackQuery data = update.getCallbackQuery();
             Long chatId = data.getMessage().getChatId();
             String message = data.getData();
+            Messages.LANGG lang = database.getLang(chatId);
             switch (message){
                 case "setRU \uD83C\uDDF7\uD83C\uDDFA":
-                    mes.changeLang(Messages.LANGG.RU);
+                    database.setLang(chatId,Messages.LANGG.RU);
                     break;
                 case "setEN \uD83C\uDDFA\uD83C\uDDF8":
-                    mes.changeLang(Messages.LANGG.EN);
+                    System.out.println(2);
+                    database.setLang(chatId,Messages.LANGG.EN);
+                    break;
+                case "/shipper@PairBot":
+                    makeShipper(chatId,lang);
+                    break;
+                case "/help@PairBot":
+                    System.out.println(1);
+                    sendMsg(chatId, Messages.HelpMsg[lang.ordinal()], COMMAND);
+                    break;
+                case "/stat@PairBot":
+                    makeStat(chatId,lang);
+                    break;
+                case "/reg@PairBot":
+                    regUser(chatId, data.getFrom(),lang);
+                    break;
+                case "/setlang@PairBot":
+                    sendMsg(chatId, "Chose lang", new String[]{"setRU \uD83C\uDDF7\uD83C\uDDFA", "setEN \uD83C\uDDFA\uD83C\uDDF8"});
                     break;
                 default:
+                    System.out.println(message);
                     break;
             }
         }
     }
 
-    public void makeShipper(Long id) {
+    public void makeShipper(Long id,Messages.LANGG lang) {
         SqlBase database = new SqlBase("all_chat");
         List<BaseUser> players = database.getUsers(id);
         if (players.size() < 2) {
-            sendMsg(id,"Недостаточно игроков(минимум 2)");
+            sendMsg(id,Messages.NoPlay[lang.ordinal()]);
             return;
         }
         if (database.allreadyRunning(id, getToday())) {
-            sendMsg(id,"Пара была уже определена сегодня");
+            sendMsg(id,Messages.AllreadyWasGame[lang.ordinal()]);
             return;
         }
         int[] winners = getWinners(players.size());
@@ -128,19 +146,18 @@ public class BotBody extends TelegramLongPollingBot {
             public void run() //Этот метод будет выполняться в побочном потоке
             {
                 try {
-                    sendWin(id,winner1,winner2);
+                    sendWin(id,winner1,winner2,lang);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         });
         myThready.start();    //Запуск потока
-        sendMsg(id, "@"+winner1.USERNAME + " + " + "@" + winner2.USERNAME);
         database.close();
     }
-    public void sendWin(Long id, BaseUser winner1,BaseUser winner2) throws InterruptedException {
-        for (int i=0; i<mes.getKmessages().length;i++) {
-            sendMsg(id, mes.getKmessages()[i]);
+    public void sendWin(Long id, BaseUser winner1,BaseUser winner2,Messages.LANGG lang) throws InterruptedException {
+        for (int i=0; i<Messages.KMESSEGESS[lang.ordinal()].length;i++) {
+            sendMsg(id, Messages.KMESSEGESS[lang.ordinal()][i]);
             Thread.sleep(1500);
         }
         sendMsg(id, "@"+winner1.USERNAME + " + " + "@" + winner2.USERNAME);
@@ -155,29 +172,29 @@ public class BotBody extends TelegramLongPollingBot {
         return new int[]{i1,i2};
     }
 
-    public void makeStat(Long id)
+    public void makeStat(Long id,Messages.LANGG lang)
     {
         SqlBase database = new SqlBase("all_chat");
         HashMap<String,Integer> dict = database.getTopPair(id);
-        String stat = "Топ 10 пар: \n";
+        String stat = Messages.Top10[lang.ordinal()];
         if (dict.size()!=0) {
             int i = 1;
             for (String p : dict.keySet()) {
-                stat += i + ")" + p + " : " + dict.get(p) + "раз(а) \n";
+                stat += i + ")" + p + " : " + dict.get(p) + Messages.times[lang.ordinal()];
                 i++;
             }
         }
-        else stat += "Нет пар";
+        else stat += Messages.NoPair[lang.ordinal()];
         sendMsg(id,stat);
     }
 
-    public void regUser(Long id, User user){
+    public void regUser(Long id, User user,Messages.LANGG lang){
         SqlBase database = new SqlBase("all_chat");
         if (!database.registration(id, user)) {
-            sendMsg(id,"Пользователь уже зарегестрирован");
+            sendMsg(id,Messages.AllreadyInGame[lang.ordinal()]);
         }
         else{
-            sendMsg(id,"Теперь вы зарегестрированны");
+            sendMsg(id,Messages.InGame[lang.ordinal()]);
         }
         database.close();
     }
@@ -201,6 +218,5 @@ public class BotBody extends TelegramLongPollingBot {
 
     private final String BOT_USERNAME = "PairBot";
     private final String TOKEN = "811617518:AAFRsmc6wupDPUxt63AJPmeBEBUaEsd_hnM";
-    private Messages mes = new Messages();
     private final String[] COMMAND = new String[] {"/shipper@PairBot","/reg@PairBot", "/stat@PairBot"};
 }

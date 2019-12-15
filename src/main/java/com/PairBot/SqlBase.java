@@ -37,7 +37,7 @@ public class SqlBase{
         }
     }
 
-    public synchronized boolean allreadyRunning(Long id, String day){
+    public boolean allreadyRunning(Long id, String day){
         boolean isRun = false;
         try(Statement state = connect.createStatement()) {
             String query = "select * from chatsdata where id =" + id;
@@ -54,7 +54,7 @@ public class SqlBase{
     }
 
 
-    public synchronized boolean registration(Long id, User user){
+    public boolean registration(Long id, User user){
         try(Statement state = connect.createStatement())
         {
             String query = "select * from usersdata where id="+id +" and user_id="+user.getId();
@@ -70,7 +70,7 @@ public class SqlBase{
             state.executeUpdate(query);
             query = "select * from chatsdata where id="+id;
             if (!state.executeQuery(query).next()){
-                state.executeUpdate("insert into chatsdata (id,last_date) value ("+id+",\"00.00.0000\")");
+                state.executeUpdate("insert into chatsdata (id,last_date,lang) value ("+id+",\"00.00.0000\",\"RU\")");
             }
         }
         catch (SQLException e){
@@ -79,7 +79,7 @@ public class SqlBase{
         return true;
     }
 
-    public synchronized HashMap<String,Integer> getTopPair(Long id){
+    public HashMap<String,Integer> getTopPair(Long id){
         HashMap<String,Integer> result = new HashMap<String,Integer>();
         try(Statement state = connect.createStatement()) {
             String query = "select * from winners where id=" + id;
@@ -95,7 +95,7 @@ public class SqlBase{
         return result;
     }
 
-    public synchronized List<BaseUser> getUsers(Long id)
+    public List<BaseUser> getUsers(Long id)
     {
         List<BaseUser> result = new ArrayList<BaseUser>();
         try(Statement state = connect.createStatement()){
@@ -112,7 +112,7 @@ public class SqlBase{
         return result;
     }
 
-    public synchronized void setPair(Long id,BaseUser winner1,BaseUser winner2,String Date)
+    public void setPair(Long id,BaseUser winner1,BaseUser winner2,String Date)
     {
         try(Statement state = connect.createStatement())
         {
@@ -132,5 +132,36 @@ public class SqlBase{
             e.printStackTrace();
         }
     }
+    public  Messages.LANGG getLang(Long id)
+    {
+        Messages.LANGG lang = Messages.LANGG.RU;
+        try(Statement state = connect.createStatement()){
+            String query = "select * from chatsdata where id="+id;
+            ResultSet set = state.executeQuery(query);
+
+            if (set.first())
+            {
+                 lang = Messages.LANGG.valueOf(set.getString("lang"));
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return lang;
+    }
+
+    public void setLang(Long id,Messages.LANGG lang) {
+        try (Statement state = connect.createStatement()) {
+            String query = "select * from chatsdata where id="+id;
+            if (!state.executeQuery(query).next()){
+                state.executeUpdate("insert into chatsdata (id,last_date) value ("+id+",\"00.00.0000\",\"RU\")");
+            }
+            state.executeUpdate("update chatsdata set lang=\"" + lang.name() + "\" where id=" + id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

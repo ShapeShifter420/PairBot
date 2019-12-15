@@ -63,7 +63,7 @@ public class BotBody extends TelegramLongPollingBot {
         if(update.hasMessage()){
             Message message = update.getMessage();
             Long chatId = update.getMessage().getChatId();
-            SqlBase database = new SqlBase("all_chat");
+            SqlBase database = new SqlBase();
             Messages.LANGG lang = database.getLang(chatId);
             if (message != null && message.hasText()) {
                 switch (message.getText()) {
@@ -91,7 +91,7 @@ public class BotBody extends TelegramLongPollingBot {
 
         }
         else if(update.hasCallbackQuery()){
-            SqlBase database = new SqlBase("all_chat");
+            SqlBase database = new SqlBase();
             CallbackQuery data = update.getCallbackQuery();
             Long chatId = data.getMessage().getChatId();
             String message = data.getData();
@@ -128,7 +128,7 @@ public class BotBody extends TelegramLongPollingBot {
     }
 
     public void makeShipper(Long id,Messages.LANGG lang) {
-        SqlBase database = new SqlBase("all_chat");
+        SqlBase database = new SqlBase();
         List<BaseUser> players = database.getUsers(id);
         if (players.size() < 2) {
             sendMsg(id,Messages.NoPlay[lang.ordinal()]);
@@ -174,7 +174,7 @@ public class BotBody extends TelegramLongPollingBot {
 
     public void makeStat(Long id,Messages.LANGG lang)
     {
-        SqlBase database = new SqlBase("all_chat");
+        SqlBase database = new SqlBase();
         HashMap<String,Integer> dict = database.getTopPair(id);
         String stat = Messages.Top10[lang.ordinal()];
         if (dict.size()!=0) {
@@ -189,7 +189,7 @@ public class BotBody extends TelegramLongPollingBot {
     }
 
     public void regUser(Long id, User user,Messages.LANGG lang){
-        SqlBase database = new SqlBase("all_chat");
+        SqlBase database = new SqlBase();
         if (!database.registration(id, user)) {
             sendMsg(id,Messages.AllreadyInGame[lang.ordinal()]);
         }

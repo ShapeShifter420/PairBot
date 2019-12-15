@@ -10,9 +10,9 @@ public class SqlBase{
 
     public Connection connect;
     public SqlBase(String datebase){
-        String URL = "jdbc:mysql://localhost:3306/"+datebase;
-        String LOGIN = "root";
-        String PASSWORD = "toor";
+        String URL = "mysql://be23e826335c88:e6871c6f@eu-cdbr-west-02.cleardb.net/heroku_3975da312a01dc0?reconnect=true/"+datebase;
+        String LOGIN = "be23e826335c88";
+        String PASSWORD = "e6871c6f";
         Properties properties = new Properties();
         properties.put("User", LOGIN);
         properties.put("password", PASSWORD);

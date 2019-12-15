@@ -1,1 +1,1 @@
-bot java src/main/java/com/PairBot/BotBody.java
+web: java src/main/java/com/PairBot/BotBody.java

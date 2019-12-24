@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -cp target/PairBot.jar src.main.java.com.PairBot.BotBody $PORT

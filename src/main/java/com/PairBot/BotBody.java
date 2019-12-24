@@ -68,7 +68,17 @@ public class BotBody extends TelegramLongPollingBot {
             if (message != null && message.hasText()) {
                 switch (message.getText()) {
                     case "/shipper@PairBot":
-                        makeShipper(chatId,lang);
+                        Thread myThready = new Thread(new Runnable() {
+                            public void run() //Этот метод будет выполняться в побочном потоке
+                            {
+                                try {
+                                    makeShipper(chatId,lang);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        myThready.start();
                         break;
                     case "/help@PairBot":
                         System.out.println(1);
@@ -105,7 +115,17 @@ public class BotBody extends TelegramLongPollingBot {
                     database.setLang(chatId,Messages.LANGG.EN);
                     break;
                 case "/shipper@PairBot":
-                    makeShipper(chatId,lang);
+                    Thread myThready = new Thread(new Runnable() {
+                        public void run() //Этот метод будет выполняться в побочном потоке
+                        {
+                            try {
+                                makeShipper(chatId,lang);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    myThready.start();
                     break;
                 case "/help@PairBot":
                     System.out.println(1);
@@ -127,7 +147,7 @@ public class BotBody extends TelegramLongPollingBot {
         }
     }
 
-    public void makeShipper(Long id,Messages.LANGG lang) {
+    public void makeShipper(Long id,Messages.LANGG lang) throws InterruptedException {
         SqlBase database = new SqlBase();
         List<BaseUser> players = database.getUsers(id);
         if (players.size() < 2) {
@@ -142,18 +162,9 @@ public class BotBody extends TelegramLongPollingBot {
         BaseUser winner1 = players.get(Math.min(winners[0], winners[1]));
         BaseUser winner2 = players.get(Math.max(winners[0], winners[1]));
         database.setPair(id,winner1,winner2,getToday());
-        Thread myThready = new Thread(new Runnable() {
-            public void run() //Этот метод будет выполняться в побочном потоке
-            {
-                try {
-                    sendWin(id,winner1,winner2,lang);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        myThready.start();    //Запуск потока
         database.close();
+        sendWin(id,winner1,winner2,lang);
+
     }
     public void sendWin(Long id, BaseUser winner1,BaseUser winner2,Messages.LANGG lang) throws InterruptedException {
         for (int i=0; i<Messages.KMESSEGESS[lang.ordinal()].length;i++) {

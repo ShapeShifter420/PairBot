@@ -14,19 +14,23 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.PairBot.BotBody</mainClass>
+                            <mainClass>bot.TelegramBot</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <source>1.8</source>
-                    <target>1.8</target>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
     <dependencies>

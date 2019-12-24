@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp /target/Pair-1.0-SNAPSHOT.jar BotBody $PORT
+web: java -jar /target/Pair-1.0-SNAPSHOT.jar

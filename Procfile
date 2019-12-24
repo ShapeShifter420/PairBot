@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp PairBot/Pair/1.0-SNAPSHOT/ src.main.java.com.PairBot.BotBody $PORT
+web: java $JAVA_OPTS src.main.java.com.PairBot.BotBody $PORT

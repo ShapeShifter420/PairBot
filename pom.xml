@@ -14,12 +14,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <programs>
-                        <program>
-                            <mainClass>BotBody</mainClass>
-                            <name>PairBot</name>
-                        </program>
-                    </programs>
+                    <processTypes>
+                    <worker>
+                        java $JAVA_OPTS -cp target/classes:target/dependency/* src.main.java.com.PairBot.BotBody
+                    </worker>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>

@@ -97,6 +97,7 @@ public class BotBody extends TelegramLongPollingBot {
                         break;
                 }
             }
+            database.close();
 
 
         }
@@ -143,7 +144,9 @@ public class BotBody extends TelegramLongPollingBot {
                 default:
                     System.out.println(message);
                     break;
+
             }
+            database.close();
         }
     }
 
@@ -197,6 +200,7 @@ public class BotBody extends TelegramLongPollingBot {
         }
         else stat += Messages.NoPair[lang.ordinal()];
         sendMsg(id,stat);
+        database.close();
     }
 
     public void regUser(Long id, User user,Messages.LANGG lang){

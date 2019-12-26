@@ -101,6 +101,9 @@ public class SqlBase{
         try(Statement state = connect.createStatement()){
             String query = "select * from usersdata where id="+id;
             ResultSet allUsers = state.executeQuery(query);
+            if (allUsers.first()){
+                result.add(new BaseUser(allUsers.getLong(1), allUsers.getString("username")));
+            }
             while(allUsers.next()) {
                 result.add(new BaseUser(allUsers.getLong(1), allUsers.getString("username")));
             }

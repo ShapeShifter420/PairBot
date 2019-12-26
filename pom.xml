@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>bot.TelegramBot</mainClass>
+                            <mainClass>com.PairBot.BotBody</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

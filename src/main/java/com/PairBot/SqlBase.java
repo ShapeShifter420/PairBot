@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.sql.*;
 import java.util.List;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class SqlBase{
 
@@ -79,10 +79,10 @@ public class SqlBase{
         return true;
     }
 
-    public HashMap<String,Integer> getTopPair(Long id){
-        HashMap<String,Integer> result = new HashMap<String,Integer>();
+    public LinkedHashMap<String,Integer> getTopPair(Long id){
+        LinkedHashMap<String,Integer> result = new LinkedHashMap<String,Integer>();
         try(Statement state = connect.createStatement()) {
-            String query = "select * from winners where id=" + id +" order by count";
+            String query = "select * from winners where id=" + id +" order by count desc";
             ResultSet allUsers = state.executeQuery(query);
             while (allUsers.next())
             {

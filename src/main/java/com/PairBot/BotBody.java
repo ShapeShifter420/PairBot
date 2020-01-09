@@ -189,7 +189,7 @@ public class BotBody extends TelegramLongPollingBot {
     public void makeStat(Long id,Messages.LANGG lang)
     {
         SqlBase database = new SqlBase();
-        HashMap<String,Integer> dict = database.getTopPair(id);
+        LinkedHashMap<String,Integer> dict = database.getTopPair(id);
         String stat = Messages.Top10[lang.ordinal()];
         if (dict.size()!=0) {
             int i = 1;

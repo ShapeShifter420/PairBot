@@ -82,7 +82,7 @@ public class SqlBase{
     public HashMap<String,Integer> getTopPair(Long id){
         HashMap<String,Integer> result = new HashMap<String,Integer>();
         try(Statement state = connect.createStatement()) {
-            String query = "select * from winners where id=" + id;
+            String query = "select * from winners where id=" + id +" ordered by count";
             ResultSet allUsers = state.executeQuery(query);
             while (allUsers.next())
             {

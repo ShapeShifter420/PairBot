@@ -194,6 +194,8 @@ public class BotBody extends TelegramLongPollingBot {
         if (dict.size()!=0) {
             int i = 1;
             for (String p : dict.keySet()) {
+                if (i == 11)
+                    break;
                 stat += i + ")" + p + " : " + dict.get(p) + Messages.times[lang.ordinal()];
                 i++;
             }
